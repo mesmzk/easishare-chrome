@@ -1,0 +1,22 @@
+{
+	"manifest_version": 2,
+	"name": "EasiShare",
+	"description": "EasiShare",
+	"version": "0.1",
+	"background": {
+		"page": "background.html"
+	},
+	"permissions": [
+		"http://*/",
+		"https://*/"
+	],
+	"icons": {
+		"57": "img/57.png",
+		"114": "img/114.png"
+	},
+	"browser_action": {
+		"default_title": "EasiShare",
+		"default_icon": "img/114.png",
+		"default_popup": "login.html"
+	}
+}
