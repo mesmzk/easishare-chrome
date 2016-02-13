@@ -12,7 +12,8 @@
 <body>
 <div id="sharedFiles" ng-controller="SharedFilesCtrl">
 	<a href="#" ng-click="logout()">Logout</a>
-	<span>Here you will see your shared files</span>
+	<a href="#" ng-click="reset()" ng-disabled="inProgress">Reset</a>
+	<a href="#" ng-click="refresh()" ng-disabled="inProgress">Refresh</a>
 	<ul>
 		<li ng-repeat="file in files">
 			<span>{{file.file_name}}</span>
@@ -20,6 +21,7 @@
 			<p>New: {{file.IsNew}}</p>
 		</li>
 	</ul>
+	<img class="spinner" src="img/spin.gif" alt="Loading..." ng-show="inProgress" />	
 </div>
 </body>
 </html>

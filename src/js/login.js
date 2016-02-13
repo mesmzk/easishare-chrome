@@ -1,8 +1,6 @@
 var app = angular.module('easishareApp', []);
 
 app.controller('LoginCtrl', function ($scope) {
-	//chrome.browserAction.setBadgeText({ text: "?"});
-	//chrome.browserAction.setBadgeBackgroundColor({ color: "#000"});
 	var backUser = localStorage['username'];
 	var backUrl = localStorage['url'];
 	$scope.inProgress = false;
@@ -39,7 +37,9 @@ app.controller('LoginCtrl', function ($scope) {
 			localStorage['new'] = [];
 			localStorage['lastrequest'] = 0;
 		}
-		//chrome.browserAction.setPopup({ popup: "index.html"});
+		chrome.runtime.sendMessage({job: "start"}, function(response) {	});
+		chrome.browserAction.setBadgeText({ text: '' });
+		chrome.browserAction.setPopup({ popup: "index.html"});
 		window.location.href = "index.html";
 	};
 });
