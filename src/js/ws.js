@@ -53,25 +53,28 @@ var WSLogin = function WSLoginF(username, password, callback){
 	});
 };
 var CallWS = function CallWSF(method, callback){
+	var methodArgs = arguments.length > 2 ? Array.prototype.splice.call(arguments, 2, arguments.length - 2): [];
 	var token = GetToken();
 	if(!token || token.length == 0){
-		Relogin(method, callback);
+		Relogin(method, callback, methodArgs);
 		return;
 	}
-	method(function(result){
+	methodArgs.unshift(function(result){
 		if(result && result.InvalidToken){
-			Relogin(method, callback);
+			Relogin(method, callback, methodArgs);
 			return;		
 		}
 		callback(result);
 	});
+	method.apply(this, methodArgs);
 };
-var Relogin = function ReloginF(method, callback){
+var Relogin = function ReloginF(method, callback, methodArgs){
 	var sets = GetSettings();
 	if(sets && sets.username && sets.password){
 		WSLogin(sets.username, sets.password, function(loginResult){
 			if(loginResult.Success){
-				method(callback);
+				methodArgs.unshift(callback)
+				method.apply(this, methodArgs);
 			}else{
 				callback(loginResult);
 			}
@@ -105,10 +108,10 @@ var GetDeviceStatusWS = function GetDeviceStatusWSF(callback){
 		}
 	});
 };
-var GetSharedList = function GetSharedListF(callback){
-	CallWS(GetSharedListWS, callback);	
+var GetSharedList = function GetSharedListF(callback, sinceDate){
+	CallWS(GetSharedListWS, callback, sinceDate);	
 };
-var GetSharedListWS = function GetSharedListWSF(callback){
+var GetSharedListWS = function GetSharedListWSF(callback, sinceDate){
 	var url = GetUrl('Share.asmx');
 	var token = GetToken();
 	$.soap({
@@ -119,7 +122,8 @@ var GetSharedListWS = function GetSharedListWSF(callback){
 			Options: {
 				Token: token,
 				SharedInList: true,
-				FilterOutSharedToSender: true				
+				FilterOutSharedToSender: true,
+				SinceDate: sinceDate
 			}
 		},
 
@@ -127,6 +131,9 @@ var GetSharedListWS = function GetSharedListWSF(callback){
 			var res = $.xml2json($(soapResponse.toXML()).find('GetSharedListResult')[0]).GetSharedListResult;
 			res.Success = res.ResultCode == '0';
 			res.InvalidToken = res.ResultCode == '-1';
+			if(!res.Result || res.Result == "") res.Result = { FileProperty: []};
+			res.Result = res.Result.FileProperty;
+			if(Object.prototype.toString.call( res.Result ) !== '[object Array]') res.Result = [res.Result];
 			callback(res);
 		},
 		error: function (SOAPResponse) {

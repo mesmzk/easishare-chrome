@@ -1,15 +1,13 @@
 var app = angular.module('easishareApp', []);
 
 app.controller('LoginCtrl', function ($scope) {
+	//chrome.browserAction.setBadgeText({ text: "?"});
+	//chrome.browserAction.setBadgeBackgroundColor({ color: "#000"});
 	var backUser = localStorage['username'];
 	var backUrl = localStorage['url'];
 	$scope.inProgress = false;
 	$scope.url = localStorage['url'];
 	$scope.username = localStorage['username'];
-	$scope.login2 = function(){	
-		chrome.browserAction.setPopup({ popup: "index.html"});
-		window.location.href = "index.html";
-	};
 	$scope.login = function(){
 		$scope.inProgress = true;
 		$scope.error = "";
@@ -20,9 +18,9 @@ app.controller('LoginCtrl', function ($scope) {
 				$scope.success();
 			}else{
 				$scope.error = result.ErrorMessage;
-				$scope.apply();
 			}
 			$scope.inProgress = false;
+			$scope.$apply();
 		});
 	};
 	$scope.clear = function(){
@@ -39,6 +37,7 @@ app.controller('LoginCtrl', function ($scope) {
 		if(backUser && backUrl && (backUser.toLowerCase() !== localStorage['username'].toLowerCase() || backUrl.toLowerCase() !== localStorage['url'].toLowerCase())) {
 			localStorage['files'] = [];
 			localStorage['new'] = [];
+			localStorage['lastrequest'] = 0;
 		}
 		//chrome.browserAction.setPopup({ popup: "index.html"});
 		window.location.href = "index.html";
